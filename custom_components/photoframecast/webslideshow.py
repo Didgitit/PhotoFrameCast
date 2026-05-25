@@ -205,7 +205,7 @@ class WebSlideshowView(HomeAssistantView):
         <body>
           <img id="slideshow" src="">
           <script>
-            const interval = {interval} * 1000;
+            const interval = {interval} * 60000;
             async function updatePhoto() {{
               try {{
                 const res = await fetch('/api/photoframecast/webslideshow/current');
