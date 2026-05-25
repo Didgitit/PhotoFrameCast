@@ -194,18 +194,37 @@ class WebSlideshowView(HomeAssistantView):
                 display: flex;
                 justify-content: center;
                 align-items: center;
+                position: relative;
+                font-family: sans-serif;
             }}
             img {{
                 width: 100vw;
                 height: 100vh;
                 object-fit: contain;
             }}
+            .overlay-container {{
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                background: rgba(0, 0, 0, 0.5);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 10px;
+                font-size: 3rem;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+                pointer-events: none;
+            }}
           </style>
         </head>
         <body>
           <img id="slideshow" src="">
+          <div class="overlay-container" id="clock">00:00</div>
+
           <script>
-            const interval = {interval} * 60000;
+            const interval = {interval} * 1000;
+            
+            // Function to update the photo
             async function updatePhoto() {{
               try {{
                 const res = await fetch('/api/photoframecast/webslideshow/current');
@@ -217,8 +236,26 @@ class WebSlideshowView(HomeAssistantView):
                   console.error("Failed to fetch current photo:", e);
               }}
             }}
+            
+            // Function to update the clock
+            function updateClock() {{
+                const now = new Date();
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                
+                hours = hours % 12;
+                hours = hours ? hours : 12; // Handle midnight (0 hours)
+                
+                document.getElementById("clock").textContent = hours + ":" + minutes + " " + ampm;
+            }}
+
+            // Start loops
             updatePhoto();
             setInterval(updatePhoto, interval);
+            
+            updateClock();
+            setInterval(updateClock, 60000);
           </script>
         </body>
         </html>
