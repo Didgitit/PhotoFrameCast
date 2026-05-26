@@ -179,6 +179,7 @@ class WebSlideshowView(HomeAssistantView):
     async def get(self, request):
         hass = request.app["hass"]
         interval = hass.data.get(DOMAIN, {}).get("webslideshow_interval", 5)
+        base_url = get_url(hass, prefer_external=False)
 
         html = f"""
         <html>
@@ -223,11 +224,12 @@ class WebSlideshowView(HomeAssistantView):
 
           <script>
             const interval = {interval} * 1000;
+            const baseUrl = "{base_url}";
             
             // Function to update the photo
             async function updatePhoto() {{
               try {{
-                const res = await fetch('/api/photoframecast/webslideshow/current');
+                const res = await fetch(baseUrl + '/api/photoframecast/webslideshow/current');
                 const data = await res.json();
                 if (data.photo) {{
                   document.getElementById("slideshow").src = data.photo;
@@ -273,7 +275,8 @@ class WebSlideshowCurrentView(HomeAssistantView):
         current = hass.data.get(DOMAIN, {}).get("current_photo")
         folder_path = hass.data.get(DOMAIN, {}).get("folder_path")
         if current and folder_path:
-            return self.json({"photo": f"/api/photoframecast/webfiles/{current}"})
+            base_url = get_url(hass, prefer_external=False)
+            return self.json({"photo": f"{base_url}/api/photoframecast/webfiles/{current}"})
         return self.json({"photo": None})
 
 
