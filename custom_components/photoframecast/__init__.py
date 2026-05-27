@@ -64,9 +64,10 @@ class GlobalPhotoView(HomeAssistantView):
             bbox = draw.textbbox((0, 0), now, font=font)
             text_w = bbox[2] - bbox[0]
             text_h = bbox[3] - bbox[1]
-            margin = 20
-            x = img.width - text_w - margin
-            y = img.height - text_h - margin
+            margin_right = 25
+            margin_bottom = 40
+            x = img.width - text_w - margin_right
+            y = img.height - text_h - margin_bottom
             shadow_offset = max(2, font_size // 20)
             draw.text((x + shadow_offset, y + shadow_offset), now, font=font, fill=(0, 0, 0, 180))
             draw.text((x, y), now, font=font, fill=(255, 255, 255, 255))
