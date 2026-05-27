@@ -1,4 +1,5 @@
 import asyncio
+import io
 import logging
 from pathlib import Path
 
@@ -50,7 +51,32 @@ class GlobalPhotoView(HomeAssistantView):
         if not await self.hass.async_add_executor_job(file_path.is_file):
             return web.Response(status=404, text="File not found")
 
-        return web.FileResponse(file_path)
+        def stamp_image():
+            from PIL import Image, ImageDraw, ImageFont
+            img = Image.open(file_path).convert("RGB")
+            draw = ImageDraw.Draw(img)
+            now = datetime.now().strftime("%-I:%M %p")
+            font_size = max(20, int(img.height * 0.06))
+            try:
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+            except Exception:
+                font = ImageFont.load_default()
+            bbox = draw.textbbox((0, 0), now, font=font)
+            text_w = bbox[2] - bbox[0]
+            text_h = bbox[3] - bbox[1]
+            margin = int(img.width * 0.02)
+            x = img.width - text_w - margin
+            y = img.height - text_h - margin
+            shadow_offset = max(2, font_size // 20)
+            draw.text((x + shadow_offset, y + shadow_offset), now, font=font, fill=(0, 0, 0, 180))
+            draw.text((x, y), now, font=font, fill=(255, 255, 255, 255))
+            buf = io.BytesIO()
+            img.save(buf, format="JPEG", quality=90)
+            buf.seek(0)
+            return buf.read()
+
+        image_bytes = await self.hass.async_add_executor_job(stamp_image)
+        return web.Response(body=image_bytes, content_type="image/jpeg")
 
 # ----------------- Setup ----------------- #
 async def async_setup(hass: HomeAssistant, config: ConfigType):
@@ -87,4 +113,5 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     hass.http.register_view(WebSlideshowCurrentView())
     hass.http.register_view(WebFileView())
 
+    return True
     return True
