@@ -58,13 +58,13 @@ class GlobalPhotoView(HomeAssistantView):
             now = datetime.now().strftime("%-I:%M %p")
             font_size = max(20, int(img.height * 0.06))
             try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", font_size)
+                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
             except Exception:
                 font = ImageFont.load_default()
             bbox = draw.textbbox((0, 0), now, font=font)
             text_w = bbox[2] - bbox[0]
             text_h = bbox[3] - bbox[1]
-            margin = int(img.width * 0.02)
+            margin = 20
             x = img.width - text_w - margin
             y = img.height - text_h - margin
             shadow_offset = max(2, font_size // 20)
