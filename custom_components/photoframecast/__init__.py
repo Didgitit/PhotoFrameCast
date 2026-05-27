@@ -64,7 +64,7 @@ class GlobalPhotoView(HomeAssistantView):
             bbox = draw.textbbox((0, 0), now, font=font)
             text_w = bbox[2] - bbox[0]
             text_h = bbox[3] - bbox[1]
-            margin_right = 35
+            margin_right = 50
             margin_bottom = 45
             x = img.width - text_w - margin_right
             y = img.height - text_h - margin_bottom
