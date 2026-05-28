@@ -58,26 +58,3 @@ This endpoint reads `weather.forecast_home` from HA state and returns a JSON obj
 | Overlay appearance | `.overlay-container` CSS — adjust `font-size`, `background`, `padding`, `border-radius` |
 | Clock update frequency | `setInterval(updateClock, 60000)` — value is in milliseconds |
 | Weather update frequency | `setInterval(updateWeather, 300000)` — value is in milliseconds (default 5 minutes) |
-
----
-
-#### Registering the new web weather endpoint (`__init__.py`)
-
-The `WebSlideshowWeatherView` class must be imported and registered alongside the other web slideshow views. In `__init__.py`:
-
-**Import line** (update the existing webslideshow import):
-```python
-from .webslideshow import (
-    start_webslideshow_service,
-    stop_webslideshow_service,
-    WebSlideshowView,
-    WebSlideshowCurrentView,
-    WebSlideshowWeatherView,
-    WebFileView,
-)
-```
-
-**Registration** (add after the `WebSlideshowCurrentView` registration):
-```python
-hass.http.register_view(WebSlideshowWeatherView())
-```
