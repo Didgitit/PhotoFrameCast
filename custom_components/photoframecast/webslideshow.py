@@ -215,18 +215,41 @@ class WebSlideshowView(HomeAssistantView):
                 font-weight: bold;
                 text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
                 pointer-events: none;
+                display: flex;
+                align-items: center;
+                gap: 0.3em;
             }}
           </style>
         </head>
         <body>
           <img id="slideshow" src="">
-          <div class="overlay-container" id="clock">00:00</div>
+          <div class="overlay-container">
+            <span id="weather-icon"></span>
+            <span id="clock">00:00</span>
+          </div>
 
           <script>
             const interval = {interval} * 1000;
             const baseUrl = "{base_url}";
-            
-            // Function to update the photo
+
+            const WEATHER_EMOJI = {{
+              "sunny": "☀️",
+              "clear-night": "🌙",
+              "partlycloudy": "⛅",
+              "cloudy": "☁️",
+              "fog": "🌫️",
+              "rainy": "🌧️",
+              "pouring": "🌧️",
+              "snowy": "❄️",
+              "snowy-rainy": "🌨️",
+              "lightning": "⛈️",
+              "lightning-rainy": "⛈️",
+              "windy": "💨",
+              "windy-variant": "💨",
+              "exceptional": "⚠️"
+            }};
+
+            // Update the photo
             async function updatePhoto() {{
               try {{
                 const res = await fetch(baseUrl + '/api/photoframecast/webslideshow/current');
@@ -235,29 +258,42 @@ class WebSlideshowView(HomeAssistantView):
                   document.getElementById("slideshow").src = data.photo;
                 }}
               }} catch (e) {{
-                  console.error("Failed to fetch current photo:", e);
+                console.error("Failed to fetch current photo:", e);
               }}
             }}
-            
-            // Function to update the clock
+
+            // Update the clock
             function updateClock() {{
                 const now = new Date();
                 let hours = now.getHours();
                 const minutes = String(now.getMinutes()).padStart(2, '0');
                 const ampm = hours >= 12 ? 'PM' : 'AM';
-                
                 hours = hours % 12;
-                hours = hours ? hours : 12; // Handle midnight (0 hours)
-                
+                hours = hours ? hours : 12;
                 document.getElementById("clock").textContent = hours + ":" + minutes + " " + ampm;
             }}
 
-            // Start loops
+            // Update the weather icon
+            async function updateWeather() {{
+              try {{
+                const res = await fetch(baseUrl + '/api/photoframecast/webslideshow/weather');
+                const data = await res.json();
+                const emoji = WEATHER_EMOJI[data.condition] || "";
+                document.getElementById("weather-icon").textContent = emoji;
+              }} catch (e) {{
+                console.error("Failed to fetch weather:", e);
+              }}
+            }}
+
+            // Start all loops
             updatePhoto();
             setInterval(updatePhoto, interval);
-            
+
             updateClock();
             setInterval(updateClock, 60000);
+
+            updateWeather();
+            setInterval(updateWeather, 300000); // refresh every 5 min
           </script>
         </body>
         </html>
@@ -278,6 +314,23 @@ class WebSlideshowCurrentView(HomeAssistantView):
             base_url = get_url(hass, prefer_external=False)
             return self.json({"photo": f"{base_url}/api/photoframecast/webfiles/{current}"})
         return self.json({"photo": None})
+
+
+class WebSlideshowWeatherView(HomeAssistantView):
+    url = "/api/photoframecast/webslideshow/weather"
+    name = "api:photoframecast:webslideshow:weather"
+    requires_auth = False
+
+    WEATHER_ENTITY = "weather.forecast_home"
+
+    async def get(self, request):
+        hass = request.app["hass"]
+        try:
+            weather_state = hass.states.get(self.WEATHER_ENTITY)
+            condition = weather_state.state if weather_state else None
+        except Exception:
+            condition = None
+        return self.json({"condition": condition})
 
 
 class WebFileView(HomeAssistantView):
