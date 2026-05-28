@@ -17,8 +17,7 @@ from datetime import datetime, timedelta
 from .services import start_slideshow_service, stop_slideshow_service, reset_resume_service, photo_of_the_day_service, pause_slideshow_service, resume_slideshow_service, PAUSE_RESUME_SCHEMA, START_SLIDESHOW_SCHEMA
 from .helpers import notify_user
 from .const import DOMAIN, STORAGE_KEY, STORAGE_VERSION
-from .webslideshow import start_webslideshow_service, stop_webslideshow_service, WebSlideshowView, WebSlideshowCurrentView, WebFileView
-
+from .webslideshow import start_webslideshow_service, stop_webslideshow_service, WebSlideshowView, WebSlideshowCurrentView, WebSlideshowWeatherView, WebFileView
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -367,6 +366,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     # Register WebSlideshow HTTP views
     hass.http.register_view(WebSlideshowView())
     hass.http.register_view(WebSlideshowCurrentView())
+    hass.http.register_view(WebSlideshowWeatherView())
     hass.http.register_view(WebFileView())
 
     return True
