@@ -22,7 +22,7 @@ from .webslideshow import start_webslideshow_service, stop_webslideshow_service,
 
 _LOGGER = logging.getLogger(__name__)
 
-WEATHER_ENTITY = "weather.forecast_home"
+WEATHER_ENTITY = "weather.nanaimo_forecast"
 
 # CONFIG_SCHEMA remains unchanged
 CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
