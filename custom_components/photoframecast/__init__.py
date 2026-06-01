@@ -95,6 +95,17 @@ class GlobalPhotoView(HomeAssistantView):
             draw.text((x + shadow_offset, y + shadow_offset), now, font=font, fill=(0, 0, 0, 180))
             draw.text((x, y), now, font=font, fill=(255, 255, 255, 255))
 
+        moon_phase = None
+        try:
+            moon_state = self.hass.states.get("sensor.moon_phase")
+        if moon_state:
+            moon_phase = moon_state.state
+        except Exception:
+            pass
+
+# Now pass moon_phase into the drawing function
+draw_weather_icon(draw, weather_condition, icon_cx, icon_cy, icon_radius, is_night=is_night, moon_phase=moon_phase)
+            
             # Draw weather icon to the left of the clock text
             if weather_condition:
                 icon_radius = int(font_size * 0.45)
