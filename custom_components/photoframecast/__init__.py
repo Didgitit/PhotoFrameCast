@@ -105,7 +105,7 @@ class GlobalPhotoView(HomeAssistantView):
 
 # Now pass moon_phase into the drawing function
 draw_weather_icon(draw, weather_condition, icon_cx, icon_cy, icon_radius, is_night=is_night, moon_phase=moon_phase)
-            
+
             # Draw weather icon to the left of the clock text
             if weather_condition:
                 icon_radius = int(font_size * 0.45)
