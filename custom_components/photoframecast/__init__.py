@@ -158,7 +158,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType):
     hass.http.register_view(WebSlideshowWeatherView())
     hass.http.register_view(WebFileView())
 
-    return True    name = "api:photoframecast"
+    return True
  
     def __init__(self, hass: HomeAssistant):
         self.hass = hass
