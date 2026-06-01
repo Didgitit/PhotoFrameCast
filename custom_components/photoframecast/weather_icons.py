@@ -291,7 +291,7 @@ def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phas
     else:
         # Unknown condition — draw a simple dot
         r = max(3, radius // 4)
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 255, 255, 255))draw.line([(x1, y1), (x2, y2)], fill=color, width=lw)
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 255, 255, 255))
 
 
 def _moon(draw, cx, cy, radius, offset=(0, 0), color=(255, 255, 255, 255)):
