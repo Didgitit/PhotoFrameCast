@@ -71,6 +71,13 @@ class GlobalPhotoView(HomeAssistantView):
                 is_night = sun_state.state == "below_horizon"
         except Exception:
             pass
+         moon_phase = None
+         try:
+             moon_state = self.hass.states.get("sensor.moon_phase")
+             if moon_state:
+                 moon_phase = moon_state.state
+         except Exception:
+             pass
  
         def stamp_image():
             from PIL import Image, ImageDraw, ImageFont
@@ -105,7 +112,7 @@ class GlobalPhotoView(HomeAssistantView):
                 icon_cx = x - icon_gap - icon_radius
                 icon_cy = y + text_h // 2
  
-                draw_weather_icon(draw, weather_condition, icon_cx, icon_cy, icon_radius, is_night=is_night)
+                draw_weather_icon(draw, weather_condition, icon_cx, icon_cy, icon_radius, is_night=is_night, moon_phase=moon_phase)
  
             buf = io.BytesIO()
             img.save(buf, format="JPEG", quality=90)
