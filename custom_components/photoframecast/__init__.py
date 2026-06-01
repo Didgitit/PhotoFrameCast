@@ -97,7 +97,7 @@ class GlobalPhotoView(HomeAssistantView):
 
             # Draw weather icon to the left of the clock text
             if weather_condition:
-                icon_radius = int(font_size * 0.55)
+                icon_radius = int(font_size * 0.45)
                 icon_gap = int(font_size * 0.4)
                 icon_cx = x - icon_gap - icon_radius
                 icon_cy = y + text_h // 2
