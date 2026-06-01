@@ -195,6 +195,7 @@ def _draw_moon_for_phase(draw, cx, cy, radius, offset, shadow_color, moon_phase)
         _moon(draw, cx, cy, radius, offset=offset, color=shadow_color, facing="waxing")
         _moon(draw, cx, cy, radius, facing="waxing")
     else:
+        # waning_crescent, last_quarter, waning_gibbous, or unknown — default to waning crescent
         _moon(draw, cx, cy, radius, offset=offset, color=shadow_color, facing="waning")
         _moon(draw, cx, cy, radius, facing="waning")
 
@@ -226,6 +227,7 @@ def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phas
         _wind_lines(draw, cx, cy, radius)
 
     elif condition in ("cloudy", "windy-variant"):
+        # Moon or sun peeking behind cloud
         moon_cx = cx - int(radius * 0.2)
         moon_cy = cy - int(radius * 0.2)
         moon_r = int(radius * 0.65)
@@ -239,6 +241,7 @@ def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phas
         _cloud(draw, cx + int(radius * 0.15), cy + int(radius * 0.1), int(radius * 0.75))
 
     elif condition == "partlycloudy":
+        # Prominent moon or sun with small cloud in lower corner
         main_cy = cy - int(radius * 0.1)
         if is_night:
             _draw_moon_for_phase(draw, cx, main_cy, radius, shadow, shadow_color, moon_phase)
@@ -286,5 +289,6 @@ def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phas
         _alert_triangle(draw, cx, cy, radius)
 
     else:
+        # Unknown condition — draw a simple dot
         r = max(3, radius // 4)
         draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 255, 255, 255))
