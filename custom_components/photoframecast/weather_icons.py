@@ -194,10 +194,13 @@ def _draw_moon_for_phase(draw, cx, cy, radius, offset, shadow_color, moon_phase)
     elif moon_phase in ("waxing_crescent", "first_quarter", "waxing_gibbous"):
         _moon(draw, cx, cy, radius, offset=offset, color=shadow_color, facing="waxing")
         _moon(draw, cx, cy, radius, facing="waxing")
-    else:
-        # waning_crescent, last_quarter, waning_gibbous, or unknown — default to waning crescent
+    elif moon_phase in ("waning_gibbous", "last_quarter", "waning_crescent"):
         _moon(draw, cx, cy, radius, offset=offset, color=shadow_color, facing="waning")
         _moon(draw, cx, cy, radius, facing="waning")
+    else:
+        # Fallback if sensor is unknown/unavailable: draw a standard waxing crescent
+        _moon(draw, cx, cy, radius, offset=offset, color=shadow_color, facing="waxing")
+        _moon(draw, cx, cy, radius, facing="waxing")
 
 
 def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phase=None):
@@ -227,30 +230,30 @@ def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phas
         _wind_lines(draw, cx, cy, radius)
 
     elif condition in ("cloudy", "windy-variant"):
-        # Moon or sun peeking behind cloud
-        moon_cx = cx - int(radius * 0.2)
-        moon_cy = cy - int(radius * 0.2)
-        moon_r = int(radius * 0.65)
+        # Sun or moon peeking out from BEHIND a larger foreground cloud
+        bg_cx = cx - int(radius * 0.2)
+        bg_cy = cy - int(radius * 0.2)
+        bg_r = int(radius * 0.65)
         if is_night:
-            _draw_moon_for_phase(draw, moon_cx, moon_cy, moon_r, shadow, shadow_color, moon_phase)
+            _draw_moon_for_phase(draw, bg_cx, bg_cy, bg_r, shadow, shadow_color, moon_phase)
         else:
-            _sun(draw, moon_cx, moon_cy, moon_r, offset=shadow, color=shadow_color)
-            _sun(draw, moon_cx, moon_cy, moon_r)
+            _sun(draw, bg_cx, bg_cy, bg_r, offset=shadow, color=shadow_color)
+            _sun(draw, bg_cx, bg_cy, bg_r)
         _cloud(draw, cx + int(radius * 0.15), cy + int(radius * 0.1), int(radius * 0.75),
                offset=shadow, color=shadow_color)
         _cloud(draw, cx + int(radius * 0.15), cy + int(radius * 0.1), int(radius * 0.75))
 
     elif condition == "partlycloudy":
-        # Prominent moon or sun with small cloud in lower corner
+        # Big Sun or Moon dominates, with a smaller cloud drifting in the lower corner
         main_cy = cy - int(radius * 0.1)
         if is_night:
             _draw_moon_for_phase(draw, cx, main_cy, radius, shadow, shadow_color, moon_phase)
         else:
             _sun(draw, cx, main_cy, radius, offset=shadow, color=shadow_color)
             _sun(draw, cx, main_cy, radius)
-        _cloud(draw, cx + int(radius * 0.3), cy + int(radius * 0.45), int(radius * 0.5),
+        _cloud(draw, cx + int(radius * 0.35), cy + int(radius * 0.45), int(radius * 0.5),
                offset=shadow, color=shadow_color)
-        _cloud(draw, cx + int(radius * 0.3), cy + int(radius * 0.45), int(radius * 0.5))
+        _cloud(draw, cx + int(radius * 0.35), cy + int(radius * 0.45), int(radius * 0.5))
 
     elif condition in ("rainy", "pouring", "snowy-rainy"):
         cloud_r = int(radius * 0.65)
@@ -289,6 +292,5 @@ def draw_weather_icon(draw, condition, cx, cy, radius, is_night=False, moon_phas
         _alert_triangle(draw, cx, cy, radius)
 
     else:
-        # Unknown condition — draw a simple dot
         r = max(3, radius // 4)
         draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 255, 255, 255))
