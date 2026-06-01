@@ -416,9 +416,9 @@ from .weather_icons import draw_weather_icon
 
 # ----------------- HTTP View ----------------- #
 class GlobalPhotoView(HomeAssistantView):
-requires_auth = False
-url = "/api/photoframecast/{entity_id}/{filename:.*}"
-name = "api:photoframecast"
+    requires_auth = False
+    url = "/api/photoframecast/{entity_id}/{filename:.*}"
+    name = "api:photoframecast"
 
 def __init__(self, hass: HomeAssistant):
 self.hass = hass
