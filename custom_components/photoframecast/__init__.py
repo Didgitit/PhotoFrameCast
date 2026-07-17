@@ -24,6 +24,11 @@ _LOGGER = logging.getLogger(__name__)
 
 WEATHER_ENTITY = "weather.forecast_home"
 
+# Bundled clock font, kept alongside this file so it travels with the
+# integration regardless of what OS/container HA is running in.
+# To use your own font, replace this file with another .ttf of the same name.
+FONT_PATH = Path(__file__).parent / "clock_font.ttf"
+
 CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
 
 
@@ -85,8 +90,12 @@ class GlobalPhotoView(HomeAssistantView):
             now = datetime.now().strftime("%-I:%M %p")
             font_size = max(20, int(img.height * 0.06))
             try:
-                font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
-            except Exception:
+                font = ImageFont.truetype(str(FONT_PATH), font_size)
+            except Exception as e:
+                _LOGGER.warning(
+                    "PhotoFrameCast: clock_font.ttf failed to load (%s); using tiny built-in fallback font.",
+                    e
+                )
                 font = ImageFont.load_default()
 
             bbox = draw.textbbox((0, 0), now, font=font)
